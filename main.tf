@@ -78,7 +78,7 @@ module "network" {
 
 // data sources
 data "google_compute_subnetwork" "vpc_subnet" {
-  self_link = module.network.subnets_self_link[0]
+  self_link = module.network.subnets_self_links[0]
 }
 
 // Terraform outputs
