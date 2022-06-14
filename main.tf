@@ -25,57 +25,52 @@ provider "google" {
 
 //--------------------------------------------------------------------
 // Variables
-variable "compute_instance_count" {}
 variable "compute_instance_disk_image" {}
 variable "compute_instance_disk_size" {}
+variable "compute_instance_instance_count" {}
 variable "compute_instance_machine_type" {}
 
-
-
+variable "network_project_id" {}
 
 //--------------------------------------------------------------------
 // Modules
 module "compute_instance" {
   source  = "app.terraform.io/jdefrank-gcpdemo/compute-instance/google"
-  version = "0.1.3"
+  version = "0.1.4"
 
-  count = "${var.compute_instance_count}"
   disk_image = "${var.compute_instance_disk_image}"
   disk_size = "${var.compute_instance_disk_size}"
+  instance_count = "${var.compute_instance_instance_count}"
   machine_type = "${var.compute_instance_machine_type}"
   name_prefix = "quest-demo"
-  subnetwork = "module.network_subnet.self_link"
+  subnetwork = "module.network.subnets_names[0]"
 }
 
 module "network_firewall" {
   source  = "app.terraform.io/jdefrank-gcpdemo/network-firewall/google"
-  version = "0.1.5"
+  version = "0.1.6"
 
-  description = "demo-firewall-rule"
   name = "allow-80"
-  network = "module.network.network_name"
+  network = "${module.network.network_self_link}"
   ports = [80]
+  priority = 100
   protocol = "tcp"
   source_ranges = ["0.0.0.0/0"]
-}
-
-module "network_subnet" {
-  source  = "app.terraform.io/jdefrank-gcpdemo/network-subnet/google"
-  version = "0.1.2"
-
-  ip_cidr_range = "172.16.0.0/16"
-  name = "quest-demo-subnet"
-  vpc = "module.network.network_self_link"
 }
 
 module "network" {
   source  = "app.terraform.io/jdefrank-gcpdemo/network/google"
   version = "3.4.0"
 
-  auto_create_subnetworks = "false"
   network_name = "quest-demo-network"
-  project_id = "hc-7fffbf66a1e943c9b54c8fcdfa8"
-  subnets = [module.network_subnet.self_link]
+  project_id = "${var.network_project_id}"
+  subnets = [
+    {
+      subnet_name = "subnet-01"
+      subnet_ip = "10.10.10.0/24"
+      subnet_region = "us-east1"
+      }
+  ]
 }
 
 
