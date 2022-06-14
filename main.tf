@@ -36,7 +36,7 @@ variable "network_project_id" {}
 // Modules
 module "compute_instance" {
   source  = "app.terraform.io/jdefrank-gcpdemo/compute-instance/google"
-  version = "0.1.4"
+  version = "0.1.6"
 
   disk_image = "${var.compute_instance_disk_image}"
   disk_size = "${var.compute_instance_disk_size}"
@@ -76,13 +76,18 @@ module "network" {
 
 // -------------------------------------------------------------------
 
+// data sources
+data "google_compute_subnetwork" "vpc_subnet" {
+  self_link = module.network.subnets_self_link[0]
+}
+
 // Terraform outputs
 output "network_name" {
-  value = module.network.name
+  value = module.network.network_name
 }
 
 output "subnet_gateway_address" {
-  value = module.network_subnet.gateway_address
+  value = data.google_compute_subnetwork.vpc_subnet.gateway_address
 }
 
 output "firewall_self_link" {
