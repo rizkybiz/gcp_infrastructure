@@ -38,7 +38,7 @@ module "compute_instance" {
   instance_count = "${var.compute_instance_instance_count}"
   machine_type = "${var.compute_instance_machine_type}"
   name_prefix = "quest-demo"
-  subnetwork = "module.network.subnets_names[0]"
+  subnetwork = "module.network.subnets_self_links[0]"
 }
 
 module "network_firewall" {
