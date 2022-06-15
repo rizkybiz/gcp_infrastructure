@@ -31,14 +31,14 @@ variable "network_project_id" {}
 // Modules
 module "compute_instance" {
   source  = "app.terraform.io/jdefrank-gcpdemo/compute-instance/google"
-  version = "0.1.6"
+  version = "0.1.7"
 
   disk_image = "${var.compute_instance_disk_image}"
   disk_size = "${var.compute_instance_disk_size}"
   instance_count = "${var.compute_instance_instance_count}"
   machine_type = "${var.compute_instance_machine_type}"
   name_prefix = "quest-demo"
-  subnetwork = "module.network.network_self_link"
+  network = "module.network.network_self_link"
 }
 
 module "network_firewall" {
